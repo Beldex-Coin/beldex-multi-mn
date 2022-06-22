@@ -1,0 +1,17 @@
+[Unit]
+Description=Beldex network node (%i)
+After=network-online.target
+PartOf=beldex-nodes.target
+
+[Service]
+User=_beldex
+Type=notify
+WorkingDirectory=/var/lib/beldex
+Restart=always
+RestartSec=5s
+ExecStart=/usr/bin/beldexd --non-interactive --config-file /etc/beldex/node-%i.conf
+# Enable coloured daemon output:
+Environment=TERM=xterm
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,4 @@
+[beldex-multi-sn]
+title=Beldex master node daemons
+description=Beldex master node daemons (node, storage, belnet) when running multiple service nodes
+ports=19700:19999,22800:22999/tcp|10900:10999/udp

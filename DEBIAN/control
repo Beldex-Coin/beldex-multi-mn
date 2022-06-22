@@ -1,0 +1,9 @@
+Package: beldex-multi-mn
+Version: 1.0
+Section: custom
+Priority: optional
+Architecture: all
+Essential: no
+Installed-Size: 1024
+Maintainer: victor-tucci
+Description: Print linuxconfig.org on the screen

@@ -1,0 +1,98 @@
+#!/bin/bash
+
+set -e
+
+if [ "$#" -ne 1 ] || [[ ! $1 =~ ^[0-9][0-9]$ ]]; then
+    echo "Usage: beldex-multi-sn-create XX where XX is a two-digit number."
+    exit 1
+fi
+
+if [ "$UID" -ne 0 ]; then
+    echo "This script must be run as root (e.g. via sudo)."
+    exit 1
+fi
+
+PT=$1
+beldexd_conf=/etc/beldex/node-$PT.conf
+ss_conf=/etc/beldex/storage-$PT.conf
+belnet_conf=/etc/beldex/belnet-router-$PT.ini
+for x in $beldexd_conf $ss_conf $belnet_conf /var/lib/beldex/node-$PT /var/lib/belnet/router-$PT /var/lib/beldex/storage-$PT; do
+    if [ -e $x ]; then
+        echo "$x already exists, refusing to overwrite."
+        exit 1
+    fi
+done
+
+ip=$(curl -sS http://api.ipify.org)
+if [ -z "$ip" ]; then
+    echo "Failed to figure out your public IP via ipify.org"
+    exit 2
+fi
+
+echo "Creating $beldexd_conf"
+cat <<EOF >$beldexd_conf
+master-node=1
+master-node-public-ip=$ip
+storage-server-port=299$PT
+p2p-bind-port=197$PT
+rpc-admin=127.0.0.1:198$PT
+quorumnet-port=199$PT
+data-dir=/var/lib/beldex/node-$PT
+EOF
+mkdir /var/lib/beldex/node-$PT
+chown _beldex:_beldex /var/lib/beldex/node-$PT
+
+echo "Creating $ss_conf"
+cat <<EOF >$ss_conf
+ip=0.0.0.0
+port=299$PT
+omq-port=298$PT
+beldexd-rpc=ipc:///var/lib/beldex/node-$PT/beldexd.sock
+data-dir=/var/lib/beldex/storage-$PT
+EOF
+mkdir /var/lib/beldex/storage-$PT
+chown _beldex:_beldex /var/lib/beldex/storage-$PT
+
+echo "Creating $belnet_conf"
+tmpdir=$(mktemp --tmpdir -d belnet.XXXXXXXXXX)
+/usr/bin/belnet -r -g $tmpdir/belnet.ini
+perl -pi -e "
+    s#$tmpdir#/var/lib/belnet/router-$PT#;
+    if (/^\[beldexd/ ... /^\[/) {
+        s{^#?rpc=.*}{rpc=ipc:///var/lib/beldex/node-$PT/beldexd.sock};
+    }
+    if (/^\[router/ ... /^\[/) {
+        s{#?public-ip=.*}{public-ip=$ip};
+        s{#?public-port=.*}{public-port=109$PT};
+    }
+    if (/^\[bind/ ... /^\[/) {
+        \$_ = qq{0.0.0.0=109$PT\n\n} if /^$/ and not \$added_bind++;
+    }
+    if (/^\[dns/ ... /^\[/) {
+        s{^#?bind=(?:.*):53}{bind=127.1$PT.0.0:53};
+    }
+    if (/^\[api/ ... /^\[/) {
+        s{^#?bind=127.0.0.1:1190}{bind=127.1$PT.0.0:1190};
+    }
+    if (/^\[network\]/) {
+        s{^#?ifname=.*}{ifname=beldextun$PT};
+        s{^#?ifaddr=.*}{ifaddr=10.1$PT.0.1/16}
+    }
+    if (/^\[bootstrap/ ... /^\[/) {
+        s{^#?add-node=.*}{add-node=/var/lib/belnet/router-$PT/bootstrap.signed};
+    }
+" $tmpdir/belnet.ini
+chmod 640 $tmpdir/belnet.ini
+# chgrp _beldex $tmpdir/belnet.ini
+mv $tmpdir/belnet.ini $belnet_conf
+mkdir /var/lib/belnet/router-$PT
+/usr/bin/belnet-bootstrap belnet /var/lib/belnet/router-$PT/bootstrap.signed
+ln -s $belnet_conf /var/lib/belnet/router-$PT/belnet.ini
+chown -R _belnet:_beldex /var/lib/belnet/router-$PT
+
+echo -e "\n\n\nDone with configuration setup.  Enabling and starting services..."
+
+systemctl enable --now beldex{-node,-storage-server,net-router}@$PT.service
+systemctl enable --now belnet-router@$PT.service
+
+echo "All done!\n"
