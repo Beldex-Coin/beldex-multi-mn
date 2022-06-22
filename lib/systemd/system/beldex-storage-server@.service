@@ -8,6 +8,7 @@ PartOf=beldex-storage-servers.target
 [Service]
 User=_beldex
 Type=simple
+WatchdogSec=360min
 WorkingDirectory=/var/lib/beldex
 Restart=always
 RestartSec=5s

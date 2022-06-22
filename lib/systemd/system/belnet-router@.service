@@ -8,8 +8,11 @@ AssertFileNotEmpty=/var/lib/belnet/router-%i/bootstrap.signed
 
 [Service]
 User=_belnet
+Type=simple
 SyslogIdentifier=belnet-router-%i
 WorkingDirectory=/var/lib/belnet/router-%i
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
 ExecStart=/usr/bin/belnet -r /var/lib/belnet/router-%i/belnet.ini
 Environment=BELNET_NETID=belnet
 Restart=always

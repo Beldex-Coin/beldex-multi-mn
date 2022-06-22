@@ -83,7 +83,7 @@ perl -pi -e "
     }
 " $tmpdir/belnet.ini
 chmod 640 $tmpdir/belnet.ini
-# chgrp _beldex $tmpdir/belnet.ini
+chgrp _beldex $tmpdir/belnet.ini
 mv $tmpdir/belnet.ini $belnet_conf
 mkdir /var/lib/belnet/router-$PT
 /usr/bin/belnet-bootstrap belnet /var/lib/belnet/router-$PT/bootstrap.signed
@@ -92,7 +92,7 @@ chown -R _belnet:_beldex /var/lib/belnet/router-$PT
 
 echo -e "\n\n\nDone with configuration setup.  Enabling and starting services..."
 
-systemctl enable --now beldex{-node,-storage-server,net-router}@$PT.service
+systemctl enable --now beldex{-node,-storage-server}@$PT.service
 systemctl enable --now belnet-router@$PT.service
 
 echo "All done!\n"

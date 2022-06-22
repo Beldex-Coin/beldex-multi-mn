@@ -6,6 +6,7 @@ PartOf=beldex-nodes.target
 [Service]
 User=_beldex
 Type=notify
+WatchdogSec=5min
 WorkingDirectory=/var/lib/beldex
 Restart=always
 RestartSec=5s

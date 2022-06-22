@@ -6,4 +6,12 @@ Architecture: all
 Essential: no
 Installed-Size: 1024
 Maintainer: victor-tucci
-Description: Print linuxconfig.org on the screen
+Description: Beldex master node multi-MN helper package
+ This package contains targets, and a helper script to set
+ up multiple MNs on the same machine.
+ .
+ This is unsupported and requires significantly a significantly more powerful
+ machine than what is required to run a single master node.
+ .
+ For more details on how to use this, see
+ https://github.com/victor-tucci/beldex-multi-mn
