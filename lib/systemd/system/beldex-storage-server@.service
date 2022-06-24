@@ -1,0 +1,18 @@
+[Unit]
+Description=Beldex storage server (%i)
+After=network-online.target
+Wants=beldex-node@%i.service
+After=beldex-node@%i.service
+PartOf=beldex-storage-servers.target
+
+[Service]
+User=_beldex
+Type=simple
+WatchdogSec=360min
+WorkingDirectory=/var/lib/beldex
+Restart=always
+RestartSec=5s
+ExecStart=/usr/bin/beldex-storage --config-file /etc/beldex/storage-%i.conf
+
+[Install]
+WantedBy=multi-user.target
