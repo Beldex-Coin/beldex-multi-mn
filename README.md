@@ -124,3 +124,9 @@ Similarly there are targets for storage server and routers: `beldex-storage-serv
 
 Note, however, that targets only apply to currently running services, so if you have stopped some
 you *cannot* use `sudo systemctl start beldex-nodes.target` to start them all.
+
+### Build deb package
+
+    git clone https://github.com/Beldex-Coin/beldex-multi-mn.git
+    sudo dpkg-deb --build --root-owner-group beldex-multi-mn
+    sudo dpkg -i beldex-multi-mn.deb
