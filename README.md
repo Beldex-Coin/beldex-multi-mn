@@ -94,9 +94,14 @@ and you will have a `beldexd_all` command that runs a command on *all* the belde
 
     $ beldexd_all status
 
+    beldexd:
+    2022-07-28 15:37:17.004	I Beldex 'Bucephalus' (v4.0.2-1b6b13f3e)
+    Height: 1357209, v4.0.2-1b6b13f3e(net v17), 5(out)+7(in) connections, uptime 0d0h41m55s
+    MN: 342effc6647205f0b26098eb55bdcf2c12afda60f2efe22b8d137bb7ec4a6375 not registered, last pings: 12sec (storage), 10sec (belnet)
+
     beldexd-45:
     2022-06-22 09:44:20.813	I Beldex 'Bucephalus' (v4.0.2-f47be2250)
-    Height: 475765/1271912 (37.4%), syncing, net hash 39.13 kH/s, v4.0.0-0ffabefca(net v12), 8(out)+10(in) connections, uptime 0d0h2m48s
+    Height: 475765/1271912 (37.4%), syncing, net hash 39.13 kH/s, v4.0.2-1b6b13f3e(net v12), 8(out)+10(in) connections, uptime 0d0h2m48s
     MN: 9280e29ea2acaa02a6db69a21cf7a5a4bc4322cdb9ca390da448247018a00c30 not registered, last pings: 16sec (storage), NOT RECEIVED (belnet)
 
     beldexd-65:
