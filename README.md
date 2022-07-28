@@ -72,7 +72,9 @@ You will most likely want one additional piece to be able to query the master no
         alias beldexd-$p="beldexd --config=$n"
     done
     beldexd_all() {
-        for n in /etc/beldex/beldex/node-*.conf; do
+        echo -e "\nbeldexd:"
+        beldexd status
+        for n in /etc/beldex/node-*.conf; do
             p=${n/*node-/}
             p=${p/.conf/}
             echo -e "\nbeldexd-$p:"
